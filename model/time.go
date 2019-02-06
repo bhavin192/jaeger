@@ -16,19 +16,24 @@ package model
 
 import (
 	"time"
+	"fmt"
 )
 
 // EpochMicrosecondsAsTime converts microseconds since epoch to time.Time value.
 func EpochMicrosecondsAsTime(ts uint64) time.Time {
 	seconds := ts / 1000000
 	nanos := 1000 * (ts % 1000000)
-	return time.Unix(int64(seconds), int64(nanos)).UTC()
+	t := time.Unix(int64(seconds), int64(nanos)).UTC()
+	fmt.Printf("BUG: in int to time.Time: converted time: %v, received time: %v\n", t, ts)
+	return t
 }
 
 // TimeAsEpochMicroseconds converts time.Time to microseconds since epoch,
 // which is the format the StartTime field is stored in the Span.
 func TimeAsEpochMicroseconds(t time.Time) uint64 {
-	return uint64(t.UnixNano() / 1000)
+	ct := uint64(t.UnixNano() / 1000)
+	fmt.Printf("BUG: in time.Time to Micro: converted time: %v, received time: %v\n", ct, t)
+	return ct
 }
 
 // MicrosecondsAsDuration converts duration in microseconds to time.Duration value.

@@ -24,6 +24,7 @@ import (
 	"github.com/jaegertracing/jaeger/model/adjuster"
 	"github.com/jaegertracing/jaeger/pkg/memory/config"
 	"github.com/jaegertracing/jaeger/storage/spanstore"
+	"fmt"
 )
 
 var errTraceNotFound = errors.New("Trace was not found")
@@ -69,6 +70,7 @@ func (m *Store) GetDependencies(endTs time.Time, lookback time.Duration) ([]mode
 		trace, _ := m.deduper.Adjust(orig)
 		if m.traceIsBetweenStartAndEnd(startTs, endTs, trace) {
 			for _, s := range trace.Spans {
+				fmt.Printf("BUG: in GetDependencies: spanID: %v, startTime: %v\n", s.SpanID, s.StartTime)
 				parentSpan := m.findSpan(trace, s.ParentSpanID())
 				if parentSpan != nil {
 					if parentSpan.Process.ServiceName == s.Process.ServiceName {
@@ -142,7 +144,7 @@ func (m *Store) WriteSpan(span *model.Span) error {
 
 	}
 	m.traces[span.TraceID].Spans = append(m.traces[span.TraceID].Spans, span)
-
+	fmt.Printf("BUG: in WriteTrace: spanID: %v, starttime: %v\n", span.SpanID, span.StartTime)
 	return nil
 }
 
@@ -153,6 +155,9 @@ func (m *Store) GetTrace(ctx context.Context, traceID model.TraceID) (*model.Tra
 	retMe := m.traces[traceID]
 	if retMe == nil {
 		return nil, errTraceNotFound
+	}
+	for _, span := range retMe.Spans {
+		fmt.Printf("BUG: in GetTrace: spanID: %v, startTime: %v\n", span.SpanID, span.StartTime)
 	}
 	return retMe, nil
 }

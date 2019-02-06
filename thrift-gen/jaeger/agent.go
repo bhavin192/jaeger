@@ -134,6 +134,9 @@ func (p *agentProcessorEmitBatch) Process(seqId int32, iprot, oprot thrift.TProt
 	}
 
 	iprot.ReadMessageEnd()
+	for _, span := range args.Batch.Spans {
+		fmt.Printf("\n\nBUG: %v \n\nspanID: %d operationName: %s startTime: %d\n\n", *span, span.SpanId, span.OperationName, span.StartTime)
+	}
 	var err2 error
 	if err2 = p.handler.EmitBatch(args.Batch); err2 != nil {
 		return true, err2
